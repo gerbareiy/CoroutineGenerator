@@ -1,0 +1,80 @@
+---
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: DontAlign
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: true
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortLambdasOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+BinPackArguments: true
+BinPackParameters: true
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Allman
+BreakBeforeInheritanceComma: true
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: 100
+CompactNamespaces: false
+ContinuationIndentWidth: 4
+DeriveLineEnding: true
+DerivePointerAlignment: true
+FixNamespaceComments: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: ^"[^\\\/]*"$
+    Priority: 1
+    SortPriority: 1
+    CaseSensitive: false
+  - Regex: ^".*(\\|\/).*"$
+    Priority: 2
+    SortPriority: 2
+    CaseSensitive: false
+  - Regex: windows.h|intrin.h|D3D11RenderDevice.h
+    Priority: 4
+    SortPriority: 4
+    CaseSensitive: false
+  - Regex: <[^\.]*>
+    Priority: 5
+    SortPriority: 5
+    CaseSensitive: false
+  - Regex: ^<
+    Priority: 3
+    SortPriority: 3
+    CaseSensitive: false
+IndentCaseBlocks: false
+IndentCaseLabels: false
+IndentWidth: 4
+IndentWrappedFunctionNames: false
+Language: Cpp
+LambdaBodyIndentation: Signature
+NamespaceIndentation: None
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+SortIncludes: CaseInsensitive
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatementsExceptControlMacros
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+Standard: c++17
+TabWidth: 4
+UseTab: Never
+QualifierAlignment: Leave
+SeparateDefinitionBlocks: Always

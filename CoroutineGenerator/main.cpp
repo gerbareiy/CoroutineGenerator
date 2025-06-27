@@ -1,158 +1,160 @@
 #include <algorithm>
-#include <iostream>
 #include <coroutine>
 #include <functional>
-
+#include <iostream>
 #include <optional>
 
-template <typename T>
-class Generator
+template<typename T> class Generator
 {
 public:
-	struct promise_type
-	{
-		std::optional<T> current_value;
+    struct promise_type
+    {
+        std::optional<T> current_value;
 
-		auto get_return_object()
-		{
-			return Generator{ std::coroutine_handle<promise_type>::from_promise(*this) };
-		}
+        auto get_return_object()
+        {
+            return Generator{std::coroutine_handle<promise_type>::from_promise(*this)};
+        }
 
-		std::suspend_always initial_suspend() { return {}; }
-		std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always initial_suspend() { return {}; }
 
-		std::suspend_always yield_value(T value)
-		{
-			current_value = std::move(value);
-			return {};
-		}
+        std::suspend_always final_suspend() noexcept { return {}; }
 
-		void return_void() {}
+        std::suspend_always yield_value(T value)
+        {
+            current_value = std::move(value);
+            return {};
+        }
 
-		void unhandled_exception()
-		{
-			throw;
-		}
-	};
+        void return_void() {}
 
-	class Iterator
-	{
-	public:
-		Iterator() noexcept : m_coroutine(nullptr) {}
+        void unhandled_exception() { throw; }
+    };
 
-		explicit Iterator(std::coroutine_handle<promise_type> coroutine) : m_coroutine(coroutine)
-		{
-			advance();
-		}
+    class Iterator
+    {
+    public:
+        Iterator() noexcept
+            : m_coroutine(nullptr)
+        {
+        }
 
-		Iterator& operator++()
-		{
-			advance();
-			return *this;
-		}
+        explicit Iterator(std::coroutine_handle<promise_type> coroutine)
+            : m_coroutine(coroutine)
+        {
+            advance();
+        }
 
-		T const& operator*() const
-		{
-			return *m_coroutine.promise().current_value;
-		}
+        Iterator& operator++()
+        {
+            advance();
+            return *this;
+        }
 
-		bool operator==(std::default_sentinel_t) const
-		{
-			return !m_coroutine || m_coroutine.done();
-		}
+        T const& operator*() const { return *m_coroutine.promise().current_value; }
 
-	private:
-		std::coroutine_handle<promise_type> m_coroutine;
+        bool operator==(std::default_sentinel_t) const
+        {
+            return !m_coroutine || m_coroutine.done();
+        }
 
-		void advance()
-		{
-			m_coroutine.resume();
-			if (m_coroutine.done())
-			{
-				m_coroutine = nullptr;
-			}
-		}
-	};
+    private:
+        std::coroutine_handle<promise_type> m_coroutine;
 
-	Iterator begin()
-	{
-		if (!m_coroutine)
-		{
-			return Iterator{ nullptr };
-		}
-		return Iterator{ m_coroutine };
-	}
+        void advance()
+        {
+            m_coroutine.resume();
+            if (m_coroutine.done())
+            {
+                m_coroutine = nullptr;
+            }
+        }
+    };
 
-	std::default_sentinel_t end()
-	{
-		return {};
-	}
+    Iterator begin()
+    {
+        if (!m_coroutine)
+        {
+            return Iterator{nullptr};
+        }
+        return Iterator{m_coroutine};
+    }
 
-	Generator(std::coroutine_handle<promise_type> h) : m_coroutine(h) {}
-	Generator(Generator const&) = delete;
+    std::default_sentinel_t end() { return {}; }
 
-	Generator(Generator&& other) noexcept : m_coroutine(other.m_coroutine)
-	{
-		other.m_coroutine = nullptr;
-	}
+    Generator(std::coroutine_handle<promise_type> h)
+        : m_coroutine(h)
+    {
+    }
 
-	~Generator()
-	{
-		if (m_coroutine)
-		{
-			m_coroutine.destroy();
-		}
-	}
+    Generator(Generator const&) = delete;
 
-	Generator& operator=(Generator const&) = delete;
-	Generator& operator=(Generator&& other) noexcept
-	{
-		if (this != &other)
-		{
-			if (m_coroutine)
-			{
-				m_coroutine.destroy();
-			}
-			m_coroutine = other.m_coroutine;
-			other.m_coroutine = nullptr;
-		}
-		return *this;
-	}
+    Generator(Generator&& other) noexcept
+        : m_coroutine(other.m_coroutine)
+    {
+        other.m_coroutine = nullptr;
+    }
+
+    ~Generator()
+    {
+        if (m_coroutine)
+        {
+            m_coroutine.destroy();
+        }
+    }
+
+    Generator& operator=(Generator const&) = delete;
+
+    Generator& operator=(Generator&& other) noexcept
+    {
+        if (this != &other)
+        {
+            if (m_coroutine)
+            {
+                m_coroutine.destroy();
+            }
+            m_coroutine = other.m_coroutine;
+            other.m_coroutine = nullptr;
+        }
+        return *this;
+    }
 
 private:
-	std::coroutine_handle<promise_type> m_coroutine;
+    std::coroutine_handle<promise_type> m_coroutine;
 };
 
-
-Generator<int> cor()
+Generator<int>
+cor()
 {
-	for (int i = 0; i < 1000; ++i)
-	{
-		co_yield i;
-	}
+    for (int i = 0; i < 1000; ++i)
+    {
+        co_yield i;
+    }
 }
 
-std::vector<int> vec()
+std::vector<int>
+vec()
 {
-	std::vector<int> v(1000);
-	return v;
+    std::vector<int> v(1000);
+    return v;
 }
 
-int main()
+int
+main()
 {
-	for (auto a : cor())
-	{
-		if (a == 500)
-		{
-			break;
-		}
-		std::cout << a << " ";
-	}
-	std::cout << std::endl;
-	std::cout << std::endl;
+    for (auto a : cor())
+    {
+        if (a == 500)
+        {
+            break;
+        }
+        std::cout << a << " ";
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
 
-	for (auto a : cor())
-	{
-		std::cout << a << " ";
-	}
+    for (auto a : cor())
+    {
+        std::cout << a << " ";
+    }
 }
