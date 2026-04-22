@@ -45,6 +45,12 @@ public:
             advance();
         }
 
+        Iterator& next()
+        {
+            advance();
+            return *this;
+        }
+
         Iterator& operator++()
         {
             advance();
@@ -55,7 +61,7 @@ public:
 
         bool operator==(std::default_sentinel_t) const
         {
-            return !m_coroutine || m_coroutine.done();
+            return m_coroutine.done();
         }
 
     private:
@@ -63,11 +69,11 @@ public:
 
         void advance()
         {
-            m_coroutine.resume();
             if (m_coroutine.done())
             {
-                m_coroutine = nullptr;
+                return;
             }
+            m_coroutine.resume();
         }
     };
 
@@ -103,24 +109,14 @@ public:
         }
     }
 
-    Generator& operator=(Generator const&) = delete;
-
-    Generator& operator=(Generator&& other) noexcept
+    Generator& operator=(Generator other) noexcept
     {
-        if (this != &other)
-        {
-            if (m_coroutine)
-            {
-                m_coroutine.destroy();
-            }
-            m_coroutine = other.m_coroutine;
-            other.m_coroutine = nullptr;
-        }
+        std::swap(m_coroutine, other.m_coroutine);
         return *this;
     }
 
 private:
-    std::coroutine_handle<promise_type> m_coroutine;
+    std::coroutine_handle<promise_type> m_coroutine = nullptr;
 };
 
 Generator<int>
